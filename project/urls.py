@@ -16,7 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings  # Чтобы была возможность подгрузить файл с настройками
-from django.conf.urls.static import static  # Чтобы подгрузить обработчик статических файлов
+from django.conf.urls.static import static  # Чтобы подгрузить обработчик статических фа
+import mimetypes
+
+mimetypes.add_type("application/javascript", ".js", True)
+
+DEBUG_TOOLBAR_CONFIG = {
+    "INTERCEPT_REDIRECTS": False,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,3 +36,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # Добавление путей для обработки
     # медиафайлов в Django(по умолчанию не обрабатывается, поэтому пишем, чтобы обрабатывалась как статика). Для режима
     # продакшн (Debug=False) нужно использовать другие сервисы (не Django) для обработки медиафайлов.
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]
