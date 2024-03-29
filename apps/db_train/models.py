@@ -112,6 +112,12 @@ class Tag(models.Model):
     def __str__(self):
         return f'Тег: {self.name}'
 
+# import django.db.models.query.QuerySet
+
+def transform_to_list(data):
+    list_ = list(data.all().values_list("name"))
+    return list_
+
 
 class Entry(models.Model):
     text = models.TextField(verbose_name="Текст статьи", )
@@ -119,4 +125,4 @@ class Entry(models.Model):
     tags = models.ManyToManyField("Tag", related_name='entries')
 
     def __str__(self):
-        return f'Автор: {self.author}; Тег: {self.tags.name}'
+        return f'Автор: {self.author}; Тег: {transform_to_list(self.tags)}'
