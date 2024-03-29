@@ -1,9 +1,11 @@
 import django
 import os
 import datetime
-from django.db.models import Count, Max, Min, Sum
+import pprint
+from django.db.models import Count, Max, Min, Sum, F, Value, Subquery, Window
 from django.db.models import Avg, Q, StdDev, Variance
 from django.db import connection
+from django.db.models import Case, When, BooleanField, CharField
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
@@ -32,7 +34,6 @@ if __name__ == "__main__":
     # print(Entry.objects.filter(headline__endswith='ния'))
     start_date = datetime.date(2023, 1, 1)
     end_date = datetime.date(2023, 12, 31)
-
 
     # print(Entry.objects.filter(pub_date__range=(start_date, end_date)))
     # print(Entry.objects.filter(pub_date__year=2023))
@@ -128,22 +129,77 @@ if __name__ == "__main__":
     # blog = entry.blog
     # print("Число запросов = ", len(connection.queries), " Запросы = ", connection.queries)
     # print('Результатзапроса = ', blog)
-    class ModelA(models.Model):
+    # entry = Entry.objects.all()
+    # print("Число запросов = ", len(connection.queries), " Запросы = ", connection.queries)
+    # for row in entry:
+    #    tags = [tag.name for tag in row.tags.all()]
+    #    print("Число запросов = ", len(connection.queries), " Запросы = ", connection.queries)
+    #    print('Результат запроса = ', tags)
+    # entry = Entry.objects.prefetch_related("tags")
+    # for row in entry:
+    #    tags = [tag.name for tag in row.tags.all()]
+    #    print("Число запросов = ", len(connection.queries), " Запросы = ", connection.queries)
+    #    print('Результат запроса = ', tags)
+    # print(Entry.objects.filter(number_of_comments__gt=F('number_of_pingbacks')).values('id',
+    #                                                                                  'number_of_comments',
+    #                                                                                  'number_of_pingbacks'))
+    # print(Entry.objects.annotate(sum_number=F('number_of_pingbacks') + F('number_of_comments')).values('id',
+    #                                                                                                   'number_of_comments',
+    #                                                                                                   'number_of_pingbacks',
+    # print(Entry.objects.alias(sum_number=F('number_of_pingbacks') + F('number_of_comments')).
+    #      annotate(val1=F('sum_number') / F('number_of_comments')).values('id',
+    #                                                                      'number_of_comments',
+    #                                                                      'number_of_pingbacks',
+    #                                                                      'val1'))
+    # entries = Entry.objects.filter(
+    #    Q(headline__icontains='тайны') | Q(body_text__icontains='город'))
+    # print(entries)
+    # entries = Entry.objects.filter(
+    #    Q(blog__name='Путешествия по миру') & Q(pub_date__date__range=(datetime.date(2022, 5, 1),datetime.date(2023, 5, 1))))
+    # pr1int(entries)
+    # entries = Entry.objects.filter(Q(rating__gt=4) | Q(number_of_comments__lt=10))
+    # print(entries)
+    # entries = Entry.objects.annotate(
+    #    is_popular=Case(
+    #        When(rating__gte=4, then=True),
+    #        default=False,
+    #        output_field=BooleanField())
+    # ).values('id', 'rating', 'is_popular')
+    # print(entries)
+    #entries = Entry.objects.annotate(
+    #    count_tags=Count("tags"),
+    #    tag_label=Case(
+    #        When(count_tags__gte=3, then=Value('Много')),
+    #        When(count_tags=2, then=Value('Средне')),
+    #        default=Value('Мало'),
+    #        output_field=CharField())
+    #).values('id', 'count_tags', 'tag_label')
+    #print(entries)
+    #subquery = AuthorProfile.objects.filter(bio__isnull=True).values('author_id')
 
+    # Фильтруем записи блога по авторам
+    #query = Entry.objects.filter(author__in=Subquery(subquery))
+    #print(query)
+    #print(Entry.objects.filter(author__authorprofile__bio__isnull=True))
+    #)
 
-    # Поля модели
+    # Выводим результаты
+    #for result in results:
+    #    print(result.id, result.headline)
+    queryset = Entry.objects.annotate(
+        avg_comments=Window(
+            expression=Avg('number_of_comments'),
+            partition_by=F('blog'),
+        ),
+        max_comments=Window(
+            expression=Max('number_of_comments'),
+            partition_by=F('blog'),
+        ),
+        min_comments=Window(
+            expression=Min('number_of_comments'),
+            partition_by=F('blog'),
+        ),
 
-    class ModelB(models.Model):
-        model_a = models.ForeignKey(ModelA, on_delete=models.CASCADE)
-        # Поля модели
-
-
-    class ModelC(models.Model):
-        model_b = models.ForeignKey(ModelB, on_delete=models.CASCADE)
-        # Поля модели
-
-
-    class ModelD(models.Model):
-        model_c = models.ForeignKey(ModelC, on_delete=models.CASCADE)
-        # Поля модели
-
+    ).values('id', 'headline', 'avg_comments', 'max_comments', 'min_comments')
+    for _ in queryset:
+        print(_)
