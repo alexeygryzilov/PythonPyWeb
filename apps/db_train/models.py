@@ -119,6 +119,7 @@ def transform_to_list(data):
     return list_
 
 
+
 class Entry(models.Model):
     text = models.TextField(verbose_name="Текст статьи", )
     author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name='entries')
