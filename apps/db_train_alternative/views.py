@@ -2,7 +2,11 @@ from django.shortcuts import render
 
 from django.http import JsonResponse
 from django.views import View
+<<<<<<< HEAD
 from .models import Author, Blog
+=======
+from .models import Author
+>>>>>>> origin/main
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -151,6 +155,7 @@ class AuthorREST(View):
                                 json_dumps_params={"ensure_ascii": False,
                                                    "indent": 4},
                                 )
+<<<<<<< HEAD
 
 
 class BlogREST(View):
@@ -296,3 +301,5 @@ class BlogREST(View):
                                 json_dumps_params={"ensure_ascii": False,
                                                    "indent": 4},
                                 )
+=======
+>>>>>>> origin/main
