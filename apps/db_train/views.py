@@ -10,7 +10,7 @@ class TrainView(View):
         max_s_e = Author.objects.aggregate(max_s_e = Max('self_esteem'))
         self.answer1 = Author.objects.filter (self_esteem =max_s_e['max_s_e'])
 
-        self.answer2 = Author.objects.annotate(count = Count('entries')).order_by('-count').values('username')[0] # TODO Какой автор имеет наибольшее количество опубликованных статей?
+        self.answer2 = Author.objects.annotate(count = Count('entries')).order_by('-count').values('username')[0]
         inner_qs = Tag.objects.filter(name__in=['Кино', 'Музыка'])
         self.answer3 = Entry.objects.filter(tags__in=inner_qs)
         self.answer4 = Author.objects.filter(gender='ж').count()
