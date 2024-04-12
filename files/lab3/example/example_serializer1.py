@@ -10,11 +10,13 @@ if __name__ == "__main__":
     from rest_framework import serializers
     from apps.db_train_alternative.models import Author
 
+
     # Сериализатор
     class AuthorSerializer(serializers.Serializer):
         id = serializers.IntegerField(read_only=True)
         name = serializers.CharField(max_length=200)
         email = serializers.EmailField()
+
 
     # _____________________________________________________________________________________
     # Сериализация (Модель трансформируется в словарь который потом станет Json объектом)
@@ -45,8 +47,6 @@ if __name__ == "__main__":
         # Вывод информации об ошибках валидации
         print("Ошибка")
         print(serializer.errors)
-
-
 
     json_data = {'name': 'John', 'email': 'john@example.com'}
 
