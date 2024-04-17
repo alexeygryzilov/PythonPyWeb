@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap4",
     "debug_toolbar",
     "rest_framework",
+    'rest_framework.authtoken',
     "django_filters",
 ]
 

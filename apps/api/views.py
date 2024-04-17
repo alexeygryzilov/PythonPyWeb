@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import filters
+from rest_framework import permissions
+from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +20,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class AuthorAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -78,11 +82,27 @@ class AuthorAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CustomPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        if request.method == 'GET' and not request.user.is_authenticated:
+            return True
+
+        if request.method in ['GET', 'POST'] and request.user.is_authenticated:
+            return True
+
+        if request.user.is_superuser:
+            return True
+
+        return False
+
+
 class AuthorGenericAPIView(GenericAPIView, RetrieveModelMixin, ListModelMixin,
-                           CreateModelMixin, UpdateModelMixin,
-                           DestroyModelMixin):
+                           CreateModelMixin, UpdateModelMixin, DestroyModelMixin):
     queryset = Author.objects.all()
     serializer_class = AuthorModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
         if kwargs.get(self.lookup_field):  # если был передан id или pk
