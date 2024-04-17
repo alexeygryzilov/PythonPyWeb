@@ -36,9 +36,9 @@ class AuthorAPIView(APIView):
             serializer = AuthorSerializer(authors, many=True)
             return Response(serializer.data)
 
-
     def post(self, request):
-        serializer = AuthorSerializer(data=request.data)
+
+        serializer = AuthorSerializer(data=request.data)  # объект создан в базе данных
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -85,18 +85,15 @@ class AuthorGenericAPIView(GenericAPIView, RetrieveModelMixin, ListModelMixin,
     serializer_class = AuthorModelSerializer
 
     def get(self, request, *args, **kwargs):
-        if kwargs.get(self.lookup_field):
+        if kwargs.get(self.lookup_field):  # если был передан id или pk
             try:
-            # если был передан id или pk
-            # возвращаем один объект
+                # возвращаем один объект
                 return self.retrieve(request, *args, **kwargs)
             except Http404:
                 return Response({'message': 'Автор не найден'}, status=status.HTTP_404_NOT_FOUND)
-        # Иначе возвращаем список объектов
         else:
             # Иначе возвращаем список объектов
             return self.list(request, *args, **kwargs)
-
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -110,15 +107,18 @@ class AuthorGenericAPIView(GenericAPIView, RetrieveModelMixin, ListModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
+
 class AuthorPagination(PageNumberPagination):
     page_size = 5  # количество объектов на странице
     page_size_query_param = 'page_size'  # параметр запроса для настройки количества объектов на странице
     max_page_size = 1000  # максимальное количество объектов на странице
 
+
 class AuthorViewSet(ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorModelSerializer
     pagination_class = AuthorPagination
+    # http_method_names = ['get', 'post']
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['name', 'email']  # Указываем для каких полем можем проводить фильтрацию
     search_fields = ['email']  # Поля, по которым будет выполняться поиск

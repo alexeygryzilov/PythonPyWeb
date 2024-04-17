@@ -46,9 +46,9 @@ class AuthorREST(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            author = Author(name=data['name'], email=data['email'])
+            author = Author(name=data['name'], email=data['email']) # Питоновский объект
             author.clean_fields()
-            author.save()
+            author.save() # Объект сохранается в базе данных
 
             response_data = {
                 'message': f'Автор успешно создан',
