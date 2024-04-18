@@ -4,5 +4,9 @@ app_name = 'train'
 
 urlpatterns = [
     path('db/', TrainView.as_view(), name='index'),
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
 ]
 

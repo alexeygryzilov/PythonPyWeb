@@ -191,7 +191,7 @@ class AuthorProfile(models.Model):
 труд, то скопируем (`dumpdata`) данные из таблицы `db_train` в фикстуру, для этого выполним команду
 
 ```python
-python -Xutf8 manage.py dumpdata --indent 4 db_train > my_db_train.json
+python -Xutf8 manage.py dumpdata --indent 4 db_train -o my_db_train.json
 ```
 
 Можете посмотреть созданный файл, что скопировалась только таблица `db_train` с вашими данными. Флаг `-Xutf8` используется
@@ -438,6 +438,32 @@ DEBUG_TOOLBAR_CONFIG = {
 Пример для главной страницы
 
 ![img_9.png](pic/img_9.png)
+
+---
+#### Если панель не появилась
+
+А в консоле вылезло предупреждение, 
+
+![img_13.png](pic/img_13.png)
+
+то возможно что-то не так с передаваемым заголовком.
+
+Это можно починить добавить в `settings.py` следующие строки
+
+```python
+import mimetypes
+
+mimetypes.add_type("application/javascript", ".js", True)
+
+DEBUG_TOOLBAR_CONFIG = {
+    "INTERCEPT_REDIRECTS": False,
+}
+```
+В принципе место добавления роли не играет, но можете добавить в конец `settings.py`
+
+Теперь обновите страницу с перезагрузкой статических файлов, чтобы все статические файлы заново подгрузились и панель должна появиться.
+
+---
 
 Для страницы http://127.0.0.1:8000/train/db/ при одном ответе будет такой результат
 
