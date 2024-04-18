@@ -103,8 +103,8 @@ class AuthorGenericAPIView(GenericAPIView, RetrieveModelMixin, ListModelMixin,
     queryset = Author.objects.all()
     serializer_class = AuthorModelSerializer
     permission_classes = [permissions.IsAuthenticated]
-    #authentication_classes = [authentication.TokenAuthentication]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [authentication.TokenAuthentication]
+    #authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         if kwargs.get(self.lookup_field):  # если был передан id или pk
