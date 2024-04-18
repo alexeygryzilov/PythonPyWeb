@@ -7,6 +7,7 @@ from rest_framework import permissions
 from rest_framework import authentication
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.views.decorators.csrf import csrf_exempt
 from apps.db_train_alternative.models import Author
 from .serializers import AuthorSerializer
@@ -102,7 +103,8 @@ class AuthorGenericAPIView(GenericAPIView, RetrieveModelMixin, ListModelMixin,
     queryset = Author.objects.all()
     serializer_class = AuthorModelSerializer
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [authentication.TokenAuthentication]
+    #authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, *args, **kwargs):
         if kwargs.get(self.lookup_field):  # если был передан id или pk
