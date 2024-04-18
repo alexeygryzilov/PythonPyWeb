@@ -31,19 +31,19 @@ class AuthorAPIView(APIView):
         if pk is not None:
             try:
                 author = Author.objects.get(pk=pk)
-                serializer = AuthorSerializer(author)
+                serializer = AuthorSerializer(author) # Один объект
                 return Response(serializer.data)
             except Author.DoesNotExist:
                 return Response({"message": "Автор не найден"},
                                 status=status.HTTP_404_NOT_FOUND)
         else:
             authors = Author.objects.all()
-            serializer = AuthorSerializer(authors, many=True)
+            serializer = AuthorSerializer(authors, many=True) # Много объектов из queryset поэтому "many"
             return Response(serializer.data)
 
     def post(self, request):
 
-        serializer = AuthorSerializer(data=request.data)  # объект создан в базе данных
+        serializer = AuthorSerializer(data=request.data)  # Объект создан в базе данных
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

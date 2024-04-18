@@ -18,7 +18,8 @@ class AuthorREST(View):
         if id is None:  # Проверяем, что требуется вернуть всех пользователей
             data = []
             for author in Author.objects.all():
-                # Производим сериализацию, т.е. определяем, что именно запишется в данные для преобразования в JSON
+                # Производим сериализацию, т.е. определяем, что именно запишется в данные
+                # для преобразования в JSON
                 data_author = {'id': author.id,
                                'name': author.name,
                                'email': author.email}
@@ -45,9 +46,9 @@ class AuthorREST(View):
 
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body) # Десериализация из json в питоновский объект
             author = Author(name=data['name'], email=data['email']) # Питоновский объект
-            author.clean_fields()
+            author.clean_fields() # Валидация
             author.save() # Объект сохранается в базе данных
 
             response_data = {
@@ -86,7 +87,7 @@ class AuthorREST(View):
                                 json_dumps_params={"ensure_ascii": False,
                                                    "indent": 4},
                                 )
-        except Author.DoesNotExist:  # Если получили ошибку
+        except Author.DoesNotExist:  # Если получили ошибку из-за id
             return JsonResponse({'error': 'Автор не найден'},
                                 status=404,
                                 json_dumps_params={"ensure_ascii": False,
